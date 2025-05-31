@@ -6,5 +6,7 @@ pymongo
 from_root
 matplotlib
 python-dotenv
+certifi
+requests
 seaborn
 -e .
