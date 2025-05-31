@@ -1,6 +1,10 @@
 numpy
+ipykernel
 pandas
 scikit-learn
+pymongo
+from_root
 matplotlib
+python-dotenv
 seaborn
 -e .
