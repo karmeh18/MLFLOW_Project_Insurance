@@ -2,6 +2,7 @@ numpy
 ipykernel
 pandas
 scikit-learn
+pyyaml
 pymongo
 from_root
 matplotlib

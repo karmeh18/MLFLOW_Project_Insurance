@@ -5,6 +5,7 @@ from src.configuration.mongo_db_connection import MongoDBClient
 from src.data_access.proj1_data import DataCalling
 from src.constants import *
 from src.logger import logging
+from src.constants import *
 from sklearn.model_selection import train_test_split
 
 class DataIngestion:
@@ -17,9 +18,10 @@ class DataIngestion:
             logging.info("Starting data Importing from MongoDB")
             data_caller = DataCalling()
             df = data_caller.export_collection_as_dataframe()
-            data_dir="data"
-            if not os.path.exists(data_dir):
-                os.makedirs(data_dir)
+            if not os.path.exists(Data_Dir):
+                os.makedirs(Data_Dir)
+            df.to_csv(os.path.join(Data_Dir, "insurance_data.csv"), index=False)
+            logging.info(f"Data exported to {os.path.join(Data_Dir, 'insurance_data.csv')} successfully.")
             if df.empty:
                 logging.warning("No data found in the collection.")
             else:
@@ -55,10 +57,11 @@ class DataIngestion:
         """
         try:
             #df = self.DataCaller()
+            logging.info("Data Reading has been started")
             df=pd.read_csv(Data_Path)
-            self.split_data_as_train_test(df, Test_Size)
+            return self.split_data_as_train_test(df, Test_Size)
         except Exception as e:
             logging.exception(f"Error in data ingestion pipeline: {e}")
 
             
-# DataIngestion().initiate_data_ingestion()
+#DataIngestion().initiate_data_ingestion()
