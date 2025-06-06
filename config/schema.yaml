@@ -28,6 +28,7 @@ categorical_columns:
   - Vehicle_Damage
 
 drop_columns: _id
+target_column: Response
 
 # for data transformation - Standardization
 num_features:

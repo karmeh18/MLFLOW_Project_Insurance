@@ -31,3 +31,20 @@ def save_obj(file_path: str, obj: object) -> None:
             pickle.dump(obj, file)
     except Exception as e:
         raise Exception(f"Error saving object to {file_path}: {e}")
+
+
+def load_obj(file_path: str) -> object:
+    """
+    Loads and returns an object from a file using pickle.
+    
+    Args:
+        file_path (str): Path to the file from which the object will be loaded.
+    
+    Returns:
+        object: The loaded Python object.
+    """
+    try:
+        with open(file_path, 'rb') as file:
+            return pickle.load(file)
+    except Exception as e:
+        raise Exception(f"Error loading object from {file_path}: {e}")

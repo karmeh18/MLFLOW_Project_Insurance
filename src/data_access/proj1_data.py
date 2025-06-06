@@ -1,4 +1,5 @@
 import sys
+import os
 import pandas as pd
 import numpy as np
 from typing import Optional
@@ -6,11 +7,15 @@ from typing import Optional
 from src.configuration.mongo_db_connection import MongoDBClient
 from src.constants import Project_Name, Cluster_Name
 from src.logger import logging
-
+from dotenv import load_dotenv
+load_dotenv()
+load_data=os.getenv('data_url')
+url=os.getenv("Connection_url")
 
 class DataCalling:
     def __init__(self) -> None:
         try:
+            logging.info("Establishing Connection with MongoDB")
             self.mongo_client = MongoDBClient(Project_Name, Cluster_Name)
         except Exception as e:
             logging.exception(f"❌ Error initializing MongoDB client: {e}")
@@ -26,6 +31,7 @@ class DataCalling:
                 return pd.DataFrame()
             else:
                 collection = self.mongo_client.collection
+                logging.info("Connection Established with MongoDB")
                 data = list(collection.find())
                 print(f"✅ Data fetched with the length of {len(data)}")
 
