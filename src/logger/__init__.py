@@ -17,7 +17,9 @@ def configure_logger():
     logger = logging.getLogger()
     logger.setLevel(logging.DEBUG)
 
-    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    logging.getLogger("pymongo").setLevel(logging.WARNING)
+
+    formatter = logging.Formatter('%(asctime)s - %(filename)s: %(lineno)d - %(levelname)s - %(message)s')
 
     file_handler = RotatingFileHandler(log_file_path, maxBytes=MAX_LOG_SIZE, backupCount=LOG_BACKUP_COUNT)
     file_handler.setLevel(logging.DEBUG)

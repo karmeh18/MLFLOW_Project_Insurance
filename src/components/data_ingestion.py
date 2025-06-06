@@ -7,8 +7,13 @@ from src.constants import *
 from src.logger import logging
 from src.constants import *
 from sklearn.model_selection import train_test_split
+from dotenv import load_dotenv
+load_dotenv()
+load_data=os.getenv('data_url')
+url=os.getenv("Connection_url")
 
 class DataIngestion:
+    
     def DataCaller(self) -> pd.DataFrame:
         """
         Fetch data from MongoDB and return it as a DataFrame.
@@ -56,9 +61,9 @@ class DataIngestion:
         Initiate the data ingestion process.
         """
         try:
-            #df = self.DataCaller()
+            df = self.DataCaller()
             logging.info("Data Reading has been started")
-            df=pd.read_csv(Data_Path)
+            #df=pd.read_csv(Data_Path)
             return self.split_data_as_train_test(df, Test_Size)
         except Exception as e:
             logging.exception(f"Error in data ingestion pipeline: {e}")

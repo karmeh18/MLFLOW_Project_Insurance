@@ -22,39 +22,45 @@ class DataValidation:
         """
         try:
             status=len(df.columns) == len(self.schema['columns'])
+
             logging.info(f"Number of columns validation status: {status}")
             return status
         except Exception as e:
             logging.exception(f"Error validating number of columns: {e}")
 
-    def is_column_exist(self, df: pd.DataFrame) -> bool:
+    def is_column_exist(self, df: pd.DataFrame) -> (bool, str):
         """
         Check if all columns in the schema exist in the DataFrame.
         :param df: DataFrame to check.
-        :return: True if all columns exist, False otherwise.
+        :return: (True/False, message) tuple
         """
         try:
             dataframe_columns = df.columns.tolist()
-            missing_numerical_columns=[]
-            missing_categorical_columns=[]
+            missing_numerical_columns = []
+            missing_categorical_columns = []
+            message = ""
             for column in self.schema['numerical_columns']:
                 if column not in dataframe_columns:
                     missing_numerical_columns.append(column)
-            if len(missing_numerical_columns) > 0:
-                logging.warning(f"Missing numerical columns: {missing_numerical_columns}")
-            
             for column in self.schema['categorical_columns']:
                 if column not in dataframe_columns:
                     missing_categorical_columns.append(column)
-            if len(missing_categorical_columns) > 0:
-                logging.warning(f"Missing categorical columns: {missing_categorical_columns}")
-
-            return False if len(missing_numerical_columns) > 0 or len(missing_categorical_columns) > 0 else True
+            if missing_numerical_columns or missing_categorical_columns:
+                msg_parts = []
+                if missing_numerical_columns:
+                    msg_parts.append(f"Missing numerical columns: {missing_numerical_columns}")
+                if missing_categorical_columns:
+                    msg_parts.append(f"Missing categorical columns: {missing_categorical_columns}")
+                message = ", ".join(msg_parts)
+                logging.warning(message)
+                return False, message
+            else:
+                message = "All required columns exist in the DataFrame."
+                return True, message
         except Exception as e:
             logging.exception(f"Error checking column existence: {e}")
-            return False
+            return False, f"Error checking column existence: {e}"
 
-            
     def initiate_data_validation(self) -> bool:
         """
         Initiate the data validation process.
@@ -64,34 +70,69 @@ class DataValidation:
             logging.info("Starting data validation")
             train_status = self.validate_number_of_columns(self.train_data)
             test_status = self.validate_number_of_columns(self.test_data)
-            if not train_status or not test_status:
+            message = ""
+            if train_status and test_status:
+                message = "Number of columns matches the schema for both train and test data."
+            else:
+                if not train_status and not test_status:
+                    message = "Number of columns does not match the schema for both train and test data."
+                elif not train_status:
+                    message = "Number of columns does not match the schema for train data."
+                elif not test_status:
+                    message = "Number of columns does not match the schema for test data."
                 logging.error("Data validation failed: Number of columns mismatch")
+                report_dir = Data_Validation_Report_Path
+                os.makedirs(os.path.dirname(report_dir), exist_ok=True)
+                report__file = {
+                    "train_data_validation": train_status,
+                    "test_data_validation": test_status,
+                    "train_data_columns": self.train_data.columns.tolist(),
+                    "test_data_columns": self.test_data.columns.tolist(),
+                    "Numerical_Columns": self.schema['numerical_columns'],
+                    "Categorical_Columns": self.schema['categorical_columns'],
+                    "Message": message
+                }
+                with open(Data_Validation_Report_Path, "w") as file:
+                    json.dump(report__file, file, indent=4)
                 return False
 
-            train_column_status = self.is_column_exist(self.train_data)
-            test_column_status = self.is_column_exist(self.test_data)
+            train_column_status, train_col_msg = self.is_column_exist(self.train_data)
+            test_column_status, test_col_msg = self.is_column_exist(self.test_data)
             if not train_column_status or not test_column_status:
+                message = f"{train_col_msg} {'; ' if train_col_msg and test_col_msg else ''}{test_col_msg}"
                 logging.error("Data validation failed: Missing columns in train or test data")
+                report_dir = Data_Validation_Report_Path
+                os.makedirs(os.path.dirname(report_dir), exist_ok=True)
+                report__file = {
+                    "train_data_validation": train_column_status,
+                    "test_data_validation": test_column_status,
+                    "train_data_columns": self.train_data.columns.tolist(),
+                    "test_data_columns": self.test_data.columns.tolist(),
+                    "Numerical_Columns": self.schema['numerical_columns'],
+                    "Categorical_Columns": self.schema['categorical_columns'],
+                    "Message": message
+                }
+                with open(Data_Validation_Report_Path, "w") as file:
+                    json.dump(report__file, file, indent=4)
                 return False
-            
-            logging.info("Data validation passed successfully")
 
+            message = "Data validation passed successfully. All columns exist and number of columns match the schema."
+            logging.info(message)
             report_dir = Data_Validation_Report_Path
             os.makedirs(os.path.dirname(report_dir), exist_ok=True)
-
-            logging.info("Saving data validation report")
-            report__file={
+            report__file = {
                 "train_data_validation": train_column_status,
                 "test_data_validation": test_column_status,
                 "train_data_columns": self.train_data.columns.tolist(),
                 "test_data_columns": self.test_data.columns.tolist(),
                 "Numerical_Columns": self.schema['numerical_columns'],
                 "Categorical_Columns": self.schema['categorical_columns'],
+                "Message": message
             }
-            with open(Data_Validation_Report_Path,"w") as file:
+            with open(Data_Validation_Report_Path, "w") as file:
                 json.dump(report__file, file, indent=4)
             logging.info(f"Data validation report saved at {Data_Validation_Report_Path}")
-            return 
+            return True
         except Exception as e:
             logging.exception(f"Error during data validation: {e}")
             return False
