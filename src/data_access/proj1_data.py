@@ -44,3 +44,6 @@ class DataCalling:
         except Exception as e:
             logging.exception(f"❌ Error exporting collection to DataFrame: {e}")
             return pd.DataFrame()  # return empty on error
+
+# DC = DataCalling()
+# DC.export_collection_as_dataframe()
