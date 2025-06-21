@@ -50,7 +50,7 @@ class VehicleData:
             return DataFrame(vehicle_input_dict)
         
         except Exception as e:
-            Exception(f"Error in get_vehicle_input_data_frame method: {e}", sys) from e
+            rasie Exception(f"Error in get_vehicle_input_data_frame method: {e}", sys) from e
 
 
     def get_vehicle_data_as_dict(self):
