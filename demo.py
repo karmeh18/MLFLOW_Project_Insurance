@@ -18,5 +18,5 @@ logging.critical("This is a critical message.")
 
 
 #MongoDBClient(Project_Name, Cluster_Name)
-os.makedirs("data/artifacts", exist_ok=True)
+#os.makedirs("data/artifacts", exist_ok=True)
 

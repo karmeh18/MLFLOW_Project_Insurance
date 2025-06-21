@@ -35,3 +35,23 @@ Min_Sample_Split_Random_State: int = 101
 #Model Metrics
 Model_Trainer_Artifact_Path = "data/artifacts/Model/Model_Artifact.json"
 
+
+#AWS 
+REGION = "us-east-1"
+AWS_MODEL_EVALUATION_THRESHOLD = 0.02
+MODEL_BUCKET_NAME = "insurancebucketproj"
+AWS_Data_file_path = "project_data/insurance_data.csv"
+AWS_Split_Data_path_Training = "project_data/Artifacts/Split_Data/training_data.csv"
+AWS_Split_Data_path_Testing = "project_data/Artifacts/Split_Data/testing_data.csv"
+AWS_Preprocess_Train_Data = "project_data/Artifacts/preprocessed_train_data.pkl"
+AWS_Preprocess_Test_Data = "project_data/Artifacts/preprocessed_test_data.pkl"
+AWS_Preprocessor = "project_data/Artifacts/preprocessor.pkl"
+AWS_Validation_Report = "project_data/Artifacts/Validation_Report/report.json"
+AWS_Model_Save = "project_data/Artifacts/Model/rfc.pkl"
+AWS_Model_Artifact = "project_data/Artifacts/Model/Model_Artifact.json"
+
+
+#APP Deployment
+APP_HOST = "0.0.0.0"
+APP_PORT = 5000
+

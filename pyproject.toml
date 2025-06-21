@@ -1,7 +1,7 @@
 [project]
 name = "mlflow-project-insurance"
 version = "0.1.0"
-description = "Add your description here"
+description = "A pipeline that connects to MongoDB, fetches data, processes and validates it, trains a model, and integrates with AWS S3 for model artifact storage."
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = []
