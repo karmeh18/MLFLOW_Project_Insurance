@@ -25,7 +25,7 @@ class DataIngestion:
             df = data_caller.export_collection_as_dataframe()
             if not os.path.exists(Data_Dir):
                 os.makedirs(Data_Dir)
-            df.to_csv(os.path.join(Data_Dir, "insurance_data.csv"), index=False)
+                df.to_csv(os.path.join(Data_Dir, "insurance_data.csv"), index=False)
             logging.info(f"Data exported to {os.path.join(Data_Dir, 'insurance_data.csv')} successfully.")
             if df.empty:
                 logging.warning("No data found in the collection.")

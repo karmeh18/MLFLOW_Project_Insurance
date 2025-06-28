@@ -1,22 +1,25 @@
-from src.logger import logging
-#from src.configuration.mongo_db_connection import MongoDBClient
-from src.constants import Project_Name, Cluster_Name
-import os 
-logging.debug("This is a debug message.")
-logging.info("This is an info message.")
-logging.warning("This is a warning message.")
-logging.error("This is an error message.")
-logging.critical("This is a critical message.")
-#logging.exception("This is an exception message with traceback.", exc_info=True)
+import pandas as pd
+from src.cloud_storage.aws_storage import AWS_Storage_Service
+from botocore.exceptions import ClientError
+from src.constants import *
+data_pkl = pd.read_pickle(r"D:\Vikash_dash_Demo_Spam_MLOps\MLFLOW_Project_Insurance\data\artifacts\preprocessor\preprocessed_train_data.pkl")
+
+def file_exists(self, s3_path: str) -> bool:
+    try:
+        self.s3_client.head_object(Bucket=self.bucket_name, Key=s3_path)
+        return True
+    except ClientError as e:
+        if e.response['Error']['Code'] == '404':
+            return False
+        raise
 
 
-#try:
-#    a=1+'z'
-#    print(a)
-#except Exception as e:
-#    logging.exception(f"An exception occurred:")
+s3 = AWS_Storage_Service(bucket_name=MODEL_BUCKET_NAME)
 
+if not s3.file_exists(AWS_Model_Save):
+    raise FileNotFoundError(f"Model key '{AWS_Model_Save}' not found in bucket.")
 
-#MongoDBClient(Project_Name, Cluster_Name)
-#os.makedirs("data/artifacts", exist_ok=True)
+if not s3.file_exists(AWS_Preprocessor):
+    raise FileNotFoundError(f"Preprocessor key '{AWS_Preprocessor}' not found in bucket.")
+
 

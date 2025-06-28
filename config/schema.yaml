@@ -23,7 +23,6 @@ numerical_columns:
   - Response
 
 categorical_columns:
-  - Gender
   - Vehicle_Age
   - Vehicle_Damage
 

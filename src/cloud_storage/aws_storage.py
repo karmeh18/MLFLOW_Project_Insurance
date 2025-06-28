@@ -50,6 +50,10 @@ class AWS_Storage_Service:
         except ClientError as e:
             logging.error(f"Failed to upload {file_path} to S3: {e}")
             raise e
+        
+    def get_object(self, s3_path: str):
+        response = self.s3_client.get_object(Bucket=self.bucket_name, Key=s3_path)
+        return response['Body'].read()
 
     def file_exists(self, s3_path: str) -> bool:
         """Check if a file exists in the S3 bucket."""

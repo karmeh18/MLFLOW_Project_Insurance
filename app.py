@@ -4,14 +4,14 @@ from fastapi.responses import Response
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from starlette.responses import HTMLResponse, RedirectResponse
-from src.pipeline.prediction_pipeline import VehicleData, VehicleDataClassifier   
+from src.pipeline.prediction_pipeline import VehicleData, VehicleDataClassifier
 from uvicorn import run as app_run
+import sys
 
 from typing import Optional
 
 # Importing constants and pipeline modules from the project
 from src.constants import *
-#from src.pipline.prediction_pipeline import VehicleData, VehicleDataClassifier
 from src.pipeline.training_pipeline import TrainingPipeline
 
 

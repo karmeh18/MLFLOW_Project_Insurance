@@ -1,9 +1,13 @@
 import sys
-from src.entity.config_entity import VehiclePredictorConfig
-from src.entity.s3_estimator import Proj1Estimator
-from src.exception import MyException
+#from src.entity.config_entity import VehiclePredictorConfig
+from src.constants import *
+#from src.entity.s3_estimator import Proj1Estimator
+from src.cloud_storage.aws_storage import AWS_Storage_Service
 from src.logger import logging
+
 from pandas import DataFrame
+import joblib
+import io
 
 
 class VehicleData:
@@ -50,7 +54,7 @@ class VehicleData:
             return DataFrame(vehicle_input_dict)
         
         except Exception as e:
-            Exception(f"Error in get_vehicle_input_data_frame method: {e}", sys) from e
+            raise Exception(f"Error in get_vehicle_input_data_frame method: {e}", sys) from e
 
 
     def get_vehicle_data_as_dict(self):
@@ -82,15 +86,6 @@ class VehicleData:
             raise Exception(f"Error in get_vehicle_data_as_dict method: {e}", sys) from e
 
 class VehicleDataClassifier:
-    def __init__(self,prediction_pipeline_config: VehiclePredictorConfig = VehiclePredictorConfig(),) -> None:
-        """
-        :param prediction_pipeline_config: Configuration for prediction the value
-        """
-        try:
-            self.prediction_pipeline_config = prediction_pipeline_config
-        except Exception as e:
-            raise Exception(f"Error in VehicleDataClassifier constructor: {e}", sys) from e
-
     def predict(self, dataframe) -> str:
         """
         This is the method of VehicleDataClassifier
@@ -98,11 +93,20 @@ class VehicleDataClassifier:
         """
         try:
             logging.info("Entered predict method of VehicleDataClassifier class")
-            model = Proj1Estimator(
-                bucket_name=self.prediction_pipeline_config.model_bucket_name,
-                model_path=self.prediction_pipeline_config.model_file_path,
-            )
-            result =  model.predict(dataframe)
+            # Initialize AWS S3 client using your custom storage service
+            s3 = AWS_Storage_Service(bucket_name=MODEL_BUCKET_NAME)
+            # Get model bytes directly from S3 using the service's get_object method
+            model_bytes = s3.get_object(AWS_Model_Save)
+            # Load the model from bytes using joblib
+            model = joblib.load(io.BytesIO(model_bytes))
+            #Fetching Preprocessor from AWS
+            preprocessor_bytes = s3.get_object(AWS_Preprocessor)
+            # Load the preprocessor from bytes using joblib
+            preprocessor = joblib.load(io.BytesIO(preprocessor_bytes))
+            # Transform the input dataframe using the preprocessor
+            dataframe = preprocessor.transform(dataframe)
+            # Make prediction
+            result = model.predict(dataframe)
             
             return result
         

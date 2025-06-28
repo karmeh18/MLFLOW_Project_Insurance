@@ -30,8 +30,9 @@ class DataTransformation:
             numeric_transformer=StandardScaler()
             min_max_scaler=MinMaxScaler()
             
-            num_features = self.schema['numerical_columns']
-            mm_columns = self.schema['mm_columns']
+            # Remove target variable from feature lists if present
+            num_features = [col for col in self.schema['numerical_columns'] if col != self.schema['target_column']]
+            mm_columns = [col for col in self.schema['mm_columns'] if col != self.schema['target_column']]
             logging.info("Cols loaded from schema file")
 
             preprocessor =  ColumnTransformer(
@@ -91,10 +92,8 @@ class DataTransformation:
         """
         try:
             logging.info("Starting data transformation operations")
-            #input_train_data = self.train_data.drop(columns=[self.schema["target_column"]])
-            #input_test_data = self.test_data.drop(columns=[self.schema["target_column"]])
-            input_train_data = self.train_data
-            input_test_data = self.test_data
+            input_train_data = self.train_data.drop(columns=[self.schema["target_column"]])
+            input_test_data = self.test_data.drop(columns=[self.schema["target_column"]])
             logging.info("Dropped target column from train and test data")
             y_train = self.train_data[self.schema["target_column"]]
             y_test = self.test_data[self.schema["target_column"]]
