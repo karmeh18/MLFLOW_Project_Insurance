@@ -1,0 +1,77 @@
+# Insurance ML Project Workflow
+
+This document describes the complete workflow of the Insurance ML project and details all the modules involved in the process.
+
+---
+
+## 1. Data Ingestion
+**Module:** `src/components/data_ingestion.py`
+- Fetches raw data from MongoDB and saves it as a CSV file.
+- Splits the data into training and testing sets using `train_test_split`.
+- Saves the split datasets to artifact directories for further processing.
+
+## 2. Data Transformation
+**Module:** `src/components/data_transformation.py`
+- Drops the target column (`Response`) from feature sets.
+- Applies custom transformations: mapping, dummy variable creation, renaming.
+- Constructs a scikit-learn `Pipeline` using `ColumnTransformer` for scaling and encoding.
+- Handles class imbalance using `SMOTEENN`.
+- Saves the preprocessor object and the transformed train/test data as pickle files.
+
+## 3. Model Training
+**Module:** `src/components/model_trainer.py`
+- Loads the preprocessed train and test data.
+- Splits the data into features and target.
+- Trains a `RandomForestClassifier` with specified hyperparameters.
+- Evaluates the model using accuracy, F1-score, precision, and recall.
+- Saves the trained model and metrics as artifacts.
+
+## 4. Model Evaluation & Reporting
+**Module:** `src/components/model_trainer.py` (continued)
+- Evaluates model performance and logs metrics.
+- Saves a metrics report as a JSON file.
+
+## 5. Model Serialization & Storage
+**Modules:** `src/utils/main_utils.py`, `src/cloud_storage/aws_storage.py`
+- Serializes models and preprocessors using `joblib` or `pickle`.
+- Uploads and downloads artifacts to/from AWS S3 using a custom storage service.
+
+## 6. Prediction Pipeline
+**Module:** `src/pipeline/prediction_pipeline.py`
+- Loads the trained model and preprocessor from S3.
+- Accepts input data (e.g., from a web form).
+- Applies the same preprocessing steps as during training.
+- Makes predictions using the trained model.
+- Returns the prediction result.
+
+## 7. API Layer
+**Module:** `app.py`
+- Exposes the prediction functionality via a FastAPI web service.
+- Defines API endpoints for prediction and training.
+- Handles CORS and request parsing.
+- Calls the prediction pipeline and returns results to the user.
+
+## 8. Configuration & Schema
+**Files:** `config/schema.yaml`, `src/constants.py`
+- Centralizes configuration for feature types, columns, and file paths.
+- Defines which columns are numerical, categorical, min-max, and the target.
+- Stores paths for artifacts, models, and data directories.
+
+## 9. Logging & Error Handling
+**Module:** `src/logger.py`
+- Provides consistent logging throughout the project.
+- Logs key events, errors, and metrics at each stage of the workflow.
+
+---
+
+## Workflow Summary
+1. Data is ingested from MongoDB and split into train/test sets.
+2. Data is transformed (cleaned, encoded, scaled, balanced).
+3. Model is trained and evaluated on the processed data.
+4. Artifacts (model, preprocessor, metrics) are saved locally and/or to S3.
+5. Prediction pipeline loads the model and preprocessor, processes new input, and returns predictions.
+6. API layer exposes the prediction service for external use.
+
+---
+
+**This modular workflow ensures reproducibility, scalability, and maintainability for the entire ML lifecycle.**
